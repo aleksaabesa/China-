@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>China ამანათი</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="IMG_4717.PNG">
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        :root { --primary: #ff4757; --dark: #1e272e; --accent: #ffa502; --success: #2ed573; }
+        body { font-family: -apple-system, sans-serif; background: var(--dark); color: white; margin: 0; overflow-x: hidden; }
+        #welcome-screen { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle, #2f3542, #1e272e); }
+        .hero-title { font-size: 3.5rem; font-weight: 900; background: linear-gradient(45deg, #ff4757, #ffa502); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+        .main-btn { width: 280px; padding: 18px; margin: 8px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: 0.3s; }
+        .scan-btn { background: var(--success); color: white; }
+        .shop-btn { background: var(--primary); color: white; }
+        .info-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        
+        /* დანარჩენი სტილები იგივეა რაც გქონდა... */
+        #scanner-section, #shop-section { display: none; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .modal { background: white; color: #333; padding: 25px; border-radius: 30px; width: 100%; max-width: 320px; text-align: center; }
+        .btn-close { background: var(--dark); color: white; width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen">
+        <h1 class="hero-title">CHINA<br>ამანათი</h1>
+        <button class="main-btn scan-btn" onclick="startScanner()">გაფორმება (Scan)</button>
+        <button class="main-btn shop-btn" onclick="openShop()">შესვლა საშოპინგოდ</button>
+        <button class="main-btn info-btn" onclick="showModal('instruction-modal')">გადმოწერა (ინსტრუქცია)</button>
+        
+        <p id="notif-status" style="font-size: 0.8rem; margin-top: 10px; cursor: pointer; text-decoration: underline;" onclick="requestNotificationPermission()">შეტყობინებების ჩართვა 🔔</p>
+    </div>
+
+    <script>
+        // 1. Service Worker-ის რეგისტრაცია
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+            .then(() => console.log("Service Worker რეგისტრირებულია!"))
+            .catch(err => console.log("Service Worker-ის შეცდომა:", err));
+        }
+
+        // 2. ნებართვის მოთხოვნის ფუნქცია
+        function requestNotificationPermission() {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    alert("შეტყობინებები ჩაირთო! ✅");
+                    showTestNotification();
+                } else {
+                    alert("შეტყობინებებზე უარი თქვი. ❌");
+                }
+            });
+        }
+
+        // 3. სატესტო ნოტიფიკაცია
+        function showTestNotification() {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification("China ამანათი", {
+                        body: "შეტყობინებები წარმატებით გააქტიურდა! 📦",
+                        icon: "IMG_4717.PNG"
+                    });
+                });
+            }
+        }
+
+        // აქ დანარჩენი შენი ძველი ფუნქციები (startScanner, openShop და ა.შ.) დატოვე უცვლელად...
+        // (დააკოპირე წინა პასუხიდან)
+    </script>
+</body>
+</html>
