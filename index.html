@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>China ამანათი</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="IMG_4717.PNG">
+    <link rel="manifest" href="manifest.json">
+
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "4e749590-4325-4a32-a95d-1538d594d457",
+          safari_web_id: "web.onesignal.auto.1969a538-4e74-4325-a95d-1538d594d457", // OneSignal ამას თავად მიამატებს
+          notifyButton: {
+            enable: false, // ჩვენი საკუთარი ღილაკი გვაქვს
+          },
+        });
+      });
+    </script>
+
+    <style>
+        :root { --primary: #ff4757; --dark: #1e272e; --accent: #ffa502; --success: #2ed573; }
+        body { font-family: -apple-system, sans-serif; background: var(--dark); color: white; margin: 0; overflow-x: hidden; }
+        #welcome-screen { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .hero-title { font-size: 3.5rem; font-weight: 900; background: linear-gradient(45deg, #ff4757, #ffa502); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+        .main-btn { width: 280px; padding: 18px; margin: 8px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        .scan-btn { background: var(--success); color: white; }
+        .shop-btn { background: var(--primary); color: white; }
+        .info-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        #scanner-section, #shop-section { display: none; }
+        #shop-section { padding: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: #2f3542; border-radius: 20px; padding: 12px; text-align: center; }
+        .card img { width: 100%; border-radius: 15px; height: 130px; object-fit: cover; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
+        .modal { background: white; color: #333; padding: 25px; border-radius: 30px; width: 90%; max-width: 320px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen">
+        <h1 class="hero-title">CHINA<br>ამანათი</h1>
+        <button class="main-btn scan-btn" onclick="startScanner()">გაფორმება (Scan)</button>
+        <button class="main-btn shop-btn" onclick="openShop()">შესვლა საშოპინგოდ</button>
+        <button class="main-btn info-btn" onclick="showModal('instruction-modal')">გადმოწერა (ინსტრუქცია)</button>
+        <p style="margin-top: 20px; color: var(--success); text-decoration: underline;" onclick="activatePush()">შეტყობინებების ჩართვა 🔔</p>
+    </div>
+
+    <div id="scanner-section">...</div>
+    <div id="shop-section">...</div>
+
+    <script>
+        // OneSignal-ის გამოძახება ღილაკით
+        function activatePush() {
+            OneSignalDeferred.push(function(OneSignal) {
+                OneSignal.showNativePrompt();
+            });
+        }
+
+        // დანარჩენი ფუნქციები (სკანერი, მაღაზია) უცვლელია...
+        function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+        
+        async function startScanner() {
+            alert("სკანერი მზად არის!");
+            // აქ შენი ძველი სკანერის კოდი
+        }
+
+        function openShop() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('shop-section').style.display = 'block';
+            // აქ შენი მაღაზიის კოდი
+        }
+    </script>
+</body>
+</html>
