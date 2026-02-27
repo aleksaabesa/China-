@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>China ამანათი</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="IMG_4717.PNG">
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        :root { --primary: #ff4757; --dark: #1e272e; --success: #2ed573; }
+        body { font-family: -apple-system, sans-serif; background: var(--dark); color: white; margin: 0; overflow-x: hidden; }
+        #welcome-screen { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .hero-title { font-size: 3.5rem; font-weight: 900; background: linear-gradient(45deg, #ff4757, #ffa502); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+        .main-btn { width: 280px; padding: 18px; margin: 8px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        .scan-btn { background: var(--success); color: white; }
+        .shop-btn { background: var(--primary); color: white; }
+        .info-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        #scanner-section, #shop-section { display: none; }
+        #shop-section { padding: 20px; min-height: 100vh; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: #2f3542; border-radius: 20px; padding: 12px; text-align: center; }
+        .card img { width: 100%; border-radius: 15px; height: 130px; object-fit: cover; }
+        .btn-close { background: var(--dark); color: white; width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen">
+        <h1 class="hero-title">CHINA<br>ამანათი</h1>
+        <button class="main-btn scan-btn" onclick="startScanner()">გაფორმება (Scan)</button>
+        <button class="main-btn shop-btn" onclick="openShop()">შესვლა საშოპინგოთ</button>
+        <button class="main-btn info-btn" onclick="alert('Safari -> Share -> Add to Home Screen')">ინსტრუქცია</button>
+        <button class="main-btn" style="background:none; border: 2px solid var(--success); color: var(--success);" onclick="requestPermissionAndSend()">ნოტიფიკაციის ჩართვა 🔔</button>
+    </div>
+
+    <div id="scanner-section">
+        <video id="video-preview" autoplay playsinline style="width:100%; height:100vh; object-fit:cover;"></video>
+        <button class="btn-close" style="position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);" onclick="location.reload()">უკან</button>
+    </div>
+
+    <div id="shop-section">
+        <div class="grid" id="container"></div>
+        <button class="main-btn info-btn" style="width:100%; margin-top:20px;" onclick="location.reload()">უკან</button>
+    </div>
+
+    <script>
+        // სერვის ვორკერის რეგისტრაცია
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+
+        const messages = ["იშოპინგეე!! 🛍️", "ახალი ნივთებია! 🔥", "ფასდაკლებები დაიწყო! 💸", "შეამოწმე კატალოგი! 📦"];
+        let msgIndex = 0;
+
+        function requestPermissionAndSend() {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    sendNativeNotif();
+                } else {
+                    alert("ჩაურთე ნებართვა პარამეტრებიდან!");
+                }
+            });
+        }
+
+        function sendNativeNotif() {
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'SHOW_NOTIFICATION',
+                    body: messages[msgIndex]
+                });
+                msgIndex = (msgIndex + 1) % messages.length;
+            } else {
+                alert("სისტემა მზად არ არის, გადატვირთე გვერდი.");
+            }
+        }
+
+        // სკანერის და მაღაზიის ფუნქციები
+        async function startScanner() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('scanner-section').style.display = 'block';
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+            document.getElementById('video-preview').srcObject = stream;
+        }
+
+        function openShop() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('shop-section').style.display = 'block';
+            const container = document.getElementById('container');
+            container.innerHTML = "";
+            for(let i=1; i<=6; i++) {
+                container.innerHTML += `<div class="card"><img src="https://picsum.photos/200/200?random=${i}"><p>ნივთი #${i}</p><button class="shop-btn" style="width:100%; padding:10px; border-radius:12px;">ყიდვა</button></div>`;
+            }
+        }
+    </script>
+</body>
+</html>
