@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>China ამანათი</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="China ამანათი">
+    <link rel="apple-touch-icon" href="IMG_4717.png">
+    
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        :root {
+            --primary: #ff4757;
+            --dark: #1e272e;
+            --accent: #ffa502;
+            --success: #2ed573;
+        }
+
+        body {
+            font-family: -apple-system, sans-serif;
+            background: var(--dark);
+            color: white;
+            margin: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #welcome-screen {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #2f3542 0%, #1e272e 100%);
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff4757, #ffa502);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .main-btn {
+            width: 260px;
+            padding: 18px;
+            margin: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .shop-btn { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(255, 71, 87, 0.3); }
+        .info-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+
+        #shop-section { display: none; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .card { background: #2f3542; border-radius: 20px; padding: 10px; text-align: center; }
+        .card img { width: 100%; border-radius: 15px; height: 140px; object-fit: cover; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #fff;
+            color: #333;
+            padding: 25px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .btn-confirm { background: var(--success); color: white; width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen">
+        <h1 class="hero-title">CHINA<br>ამანათი</h1>
+        <button class="main-btn shop-btn" onclick="openShop()">შესვლა საშოპინგოდ</button>
+        <button class="main-btn info-btn" onclick="toggleModal('instruction-modal', true)">როგორ გადმოვწერო?</button>
+    </div>
+
+    <div id="shop-section">
+        <h2 style="text-align: center;">კატალოგი</h2>
+        <div class="grid" id="container"></div>
+    </div>
+
+    <div id="instruction-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="text-align: center; color: var(--primary);">📥 გადმოწერა</h2>
+            <p><b>iOS:</b> Safari-ში აირჩიე "Share" -> "Add to Home Screen"</p>
+            <hr>
+            <p><b>Android:</b> Chrome-ში აირჩიე "Install App" ან "Add to Home Screen"</p>
+            <button class="btn-confirm" onclick="toggleModal('instruction-modal', false)">გავიგე</button>
+        </div>
+    </div>
+
+    <script>
+        let currentItem = "";
+
+        function openShop() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('shop-section').style.display = 'block';
+            const container = document.getElementById('container');
+            for(let i=1; i<=80; i++) {
+                let name = "ჩინური ნივთი #" + i;
+                container.innerHTML += `
+                    <div class="card">
+                        <img src="https://picsum.photos/200/200?random=${i}">
+                        <p>${name}</p>
+                        <button class="shop-btn" style="width:100%; padding:8px; font-size:0.9rem;" onclick="handleBuy('${name}')">ყიდვა</button>
+                    </div>
+                `;
+            }
+        }
+
+        function handleBuy(name) {
+            currentItem = name;
+            const email = "alexandreabesadze172@gmail.com";
+            const body = encodeURIComponent("მე ეს ნივთი გამოვიწერე: " + currentItem);
+            window.location.href = `mailto:${email}?subject=China ამანათი&body=${body}`;
+        }
+
+        function toggleModal(id, show) {
+            document.getElementById(id).style.display = show ? 'flex' : 'none';
+        }
+    </script>
+</body>
+</html>
