@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>China ამანათი</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/framer-motion/10.12.16/framer-motion.umd.js"></script>
+    <style>
+        :root {
+            --primary: #ff4757;
+            --dark: #2f3542;
+            --accent: #ffa502;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e272e, #2f3542);
+            color: white;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* მისალმების გვერდი */
+        #welcome-screen {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            background: linear-gradient(to right, #ff4757, #ffa502);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeIn 2s ease;
+        }
+
+        .shop-btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            background: var(--primary);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(255, 71, 87, 0.4);
+        }
+
+        .shop-btn:hover {
+            transform: scale(1.1);
+            background: var(--accent);
+        }
+
+        /* მაღაზიის სექცია */
+        #shop-section {
+            display: none;
+            padding: 50px 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.4s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 15px;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .price {
+            color: var(--accent);
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .buy-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--primary);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        /* მოდალური ფანჯარა */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ffffff;
+            color: #333;
+            padding: 30px;
+            border-radius: 20px;
+            z-index: 100;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .modal button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .pay-card { background: #1e272e; color: white; }
+        .pay-cash { background: #718093; color: white; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen">
+        <h1 class="hero-title">CHINA ამანათი</h1>
+        <p>საუკეთესო ნივთები პირდაპირ ჩინეთიდან</p>
+        <button class="shop-btn" onclick="startShopping()">შესვლა საშოპინგოდ</button>
+    </div>
+
+    <div id="shop-section">
+        <h2 style="text-align:center; margin-bottom: 40px;">კატალოგი (80 ნივთი)</h2>
+        <div class="grid" id="product-grid"></div>
+    </div>
+
+    <div id="payment-modal" class="modal">
+        <h3>აირჩიეთ გადახდა</h3>
+        <button class="pay-cash" onclick="alert('Cash payment selected!')">Pay with Cash</button>
+        <button class="pay-card" onclick="showConfirm()">Pay with Card</button>
+        <button onclick="closeModal()" style="background: none; color: red;">გაუქმება</button>
+    </div>
+
+    <div id="confirm-modal" class="modal">
+        <h3>დადასტურება</h3>
+        <p>გსურთ ნივთის გამოწერა?</p>
+        <button class="pay-card" id="final-confirm-btn">დადასტურება</button>
+    </div>
+
+    <script>
+        const products = [
+            "Smart Watch V8", "Gaming Mouse", "Airpods Pro Clone", "RGB Keyboard", 
+            "iPhone Case", "Drone Mini", "Power Bank 20k", "Bluetooth Speaker",
+            "LED Strip 5m", "Laptop Stand", "Gaming Headset", "USB-C Hub"
+        ];
+
+        let selectedItem = "";
+
+        function startShopping() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            const shop = document.getElementById('shop-section');
+            shop.style.display = 'block';
+            
+            const grid = document.getElementById('product-grid');
+            
+            // 80 ნივთის გენერაცია
+            for(let i = 1; i <= 80; i++) {
+                const name = products[Math.floor(Math.random() * products.length)] + " #" + i;
+                const price = Math.floor(Math.random() * 200) + 10;
+                const imgId = 100 + i;
+                
+                grid.innerHTML += `
+                    <div class="card">
+                        <img src="https://picsum.photos/200/200?random=${imgId}" alt="product">
+                        <h3>${name}</h3>
+                        <p class="price">${price} ₾</p>
+                        <button class="buy-btn" onclick="openPayment('${name}')">ყიდვა</button>
+                    </div>
+                `;
+            }
+        }
+
+        function openPayment(name) {
+            selectedItem = name;
+            document.getElementById('payment-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('payment-modal').style.display = 'none';
+            document.getElementById('confirm-modal').style.display = 'none';
+        }
+
+        function showConfirm() {
+            document.getElementById('payment-modal').style.display = 'none';
+            document.getElementById('confirm-modal').style.display = 'block';
+            
+            document.getElementById('final-confirm-btn').onclick = function() {
+                const email = "alexandreabesadze172@gmail.com";
+                const subject = encodeURIComponent("ახალი გამოწერა - China ამანათი");
+                const body = encodeURIComponent("მე ეს ნივთი გამოვიწერე: " + selectedItem);
+                window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+            };
+        }
+    </script>
+</body>
+</html>
