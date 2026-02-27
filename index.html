@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>China ამანათი</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="IMG_4717.PNG">
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        :root { --primary: #ff4757; --dark: #1e272e; --accent: #ffa502; --success: #2ed573; }
+        body { font-family: -apple-system, sans-serif; background: var(--dark); color: white; margin: 0; overflow-x: hidden; }
+        
+        #welcome-screen { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle, #2f3542, #1e272e); }
+        .hero-title { font-size: 3.5rem; font-weight: 900; background: linear-gradient(45deg, #ff4757, #ffa502); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+        
+        .main-btn { width: 280px; padding: 18px; margin: 8px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: 0.3s; }
+        .scan-btn { background: var(--success); color: white; }
+        .shop-btn { background: var(--primary); color: white; }
+        .info-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+
+        /* სკანერი */
+        #scanner-section { display: none; height: 100vh; background: black; position: relative; }
+        #video-preview { width: 100%; height: 100%; object-fit: cover; }
+        .scan-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 260px; height: 160px; border: 3px solid var(--success); border-radius: 15px; box-shadow: 0 0 30px rgba(46, 213, 115, 0.5); }
+
+        /* მაღაზია */
+        #shop-section { display: none; padding: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: #2f3542; border-radius: 20px; padding: 12px; text-align: center; }
+        .card img { width: 100%; border-radius: 15px; height: 130px; object-fit: cover; }
+
+        /* მოდალი */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .modal { background: white; color: #333; padding: 25px; border-radius: 30px; width: 100%; max-width: 320px; text-align: center; }
+        .btn-close { background: var(--dark); color: white; width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen">
+        <h1 class="hero-title">CHINA<br>ამანათი</h1>
+        <button class="main-btn scan-btn" onclick="startScanner()">გაფორმება (Scan)</button>
+        <button class="main-btn shop-btn" onclick="openShop()">შესვლა საშოპინგოდ</button>
+        <button class="main-btn info-btn" onclick="showModal('instruction-modal')">გადმოწერა (ინსტრუქცია)</button>
+    </div>
+
+    <div id="scanner-section">
+        <video id="video-preview" autoplay playsinline></video>
+        <div class="scan-overlay"></div>
+    </div>
+
+    <div id="shop-section">
+        <h2 style="text-align: center;">კატალოგი</h2>
+        <div class="grid" id="container"></div>
+        <button class="main-btn info-btn" style="width:100%" onclick="location.reload()">უკან დაბრუნება</button>
+    </div>
+
+    <div id="instruction-modal" class="modal-overlay">
+        <div class="modal">
+            <h2 style="color:var(--primary)">როგორ გადმოვწეროთ?</h2>
+            <p style="text-align:left"><b>iOS:</b> Safari-ში აირჩიეთ "Share" -> "Add to Home Screen"</p>
+            <p style="text-align:left"><b>Android:</b> Chrome-ში აირჩიეთ "Install App" ან "Add to Home Screen"</p>
+            <button class="btn-close" onclick="closeModal()">გავიგე</button>
+        </div>
+    </div>
+
+    <div id="scan-result-modal" class="modal-overlay">
+        <div class="modal">
+            <h2 style="color:var(--success)">✅ გაფორმებულია!</h2>
+            <p style="font-size:1.2rem">ამანათი ჩამოვა <b>5 დღეში</b></p>
+            <button class="btn-close" onclick="location.reload()">დახურვა</button>
+        </div>
+    </div>
+
+    <script>
+        // სკანერი
+        async function startScanner() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('scanner-section').style.display = 'block';
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                document.getElementById('video-preview').srcObject = stream;
+                setTimeout(() => {
+                    stream.getTracks().forEach(t => t.stop());
+                    document.getElementById('scanner-section').style.display = 'none';
+                    showModal('scan-result-modal');
+                }, 3000);
+            } catch (e) {
+                alert("კამერა ვერ ჩაირთო!");
+                location.reload();
+            }
+        }
+
+        // მაღაზია
+        function openShop() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('shop-section').style.display = 'block';
+            const container = document.getElementById('container');
+            const items = ["iPhone 15", "AirPods", "MacBook", "Sony Headset", "Smart Watch", "Power Bank"];
+            for(let i=0; i<30; i++) {
+                container.innerHTML += `
+                    <div class="card">
+                        <img src="https://picsum.photos/300/300?random=${i}">
+                        <p>${items[i % items.length]}</p>
+                        <button class="shop-btn" style="width:100%; padding:8px; border-radius:10px;" onclick="alert('შეკვეთა გაგზავნილია მეილზე!')">ყიდვა</button>
+                    </div>`;
+            }
+        }
+
+        function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+    </script>
+</body>
+</html>
