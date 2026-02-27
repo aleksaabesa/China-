@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>China ამანათი</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="China ამანათი">
+    <link rel="apple-touch-icon" href="IMG_4717.PNG">
+
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        :root { --primary: #ff4757; --dark: #1e272e; --accent: #ffa502; --success: #2ed573; }
+        body { font-family: -apple-system, sans-serif; background: var(--dark); color: white; margin: 0; overflow-x: hidden; }
+        
+        /* პრიალა დიზაინი */
+        #welcome-screen { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle, #2f3542, #1e272e); }
+        .hero-title { font-size: 3.5rem; font-weight: 900; background: linear-gradient(45deg, #ff4757, #ffa502); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .main-btn { width: 260px; padding: 18px; margin: 10px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .shop-btn { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(255, 71, 87, 0.3); }
+        .info-btn { background: rgba(255,255,255,0.1); color: white; }
+
+        #shop-section { display: none; padding: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: #2f3542; border-radius: 20px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .card img { width: 100%; border-radius: 15px; height: 130px; object-fit: cover; }
+
+        /* გადახდის ფანჯარა */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .modal { background: white; color: #333; padding: 25px; border-radius: 30px; width: 100%; max-width: 320px; text-align: center; }
+        .pay-btn { width: 100%; padding: 15px; margin: 8px 0; border-radius: 15px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; }
+        .btn-card { background: #1e272e; color: white; }
+        .btn-cash { background: var(--accent); color: white; }
+        .btn-confirm { background: var(--success); color: white; }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen">
+        <h1 class="hero-title">CHINA<br>ამანათი</h1>
+        <button class="main-btn shop-btn" onclick="openShop()">შესვლა საშოპინგოდ</button>
+        <button class="main-btn info-btn" onclick="alert('iPhone: Share -> Add to Home Screen\nAndroid: Settings -> Install')">ინსტრუქცია</button>
+    </div>
+
+    <div id="shop-section">
+        <h2 style="text-align: center;">კატალოგი (80)</h2>
+        <div class="grid" id="container"></div>
+    </div>
+
+    <div id="modal-pay" class="modal-overlay">
+        <div class="modal">
+            <h3 id="item-name-display">ნივთი</h3>
+            <button class="pay-btn btn-card" onclick="showConfirm('CARD')">Pay with Card</button>
+            <button class="pay-btn btn-cash" onclick="showConfirm('CASH')">Pay with Cash</button>
+            <button onclick="closeModal()" style="background:none; border:none; color:red; margin-top:10px;">გაუქმება</button>
+        </div>
+    </div>
+
+    <div id="modal-confirm" class="modal-overlay">
+        <div class="modal">
+            <h3 id="confirm-title">დადასტურება</h3>
+            <p id="confirm-text"></p>
+            <button class="pay-btn btn-confirm" id="final-send">დადასტურება</button>
+            <button onclick="closeModal()" style="background:none; border:none; color:gray;">უკან</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedItem = "";
+        const emailAddr = "alexandreabesadze172@gmail.com";
+
+        function openShop() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('shop-section').style.display = 'block';
+            const container = document.getElementById('container');
+            for(let i=1; i<=80; i++) {
+                let name = "პროდუქტი #" + i;
+                container.innerHTML += `
+                    <div class="card">
+                        <img src="https://picsum.photos/300/300?random=${i}">
+                        <p style="font-size:0.9rem; margin:10px 0;">${name}</p>
+                        <button class="shop-btn" style="width:100%; padding:8px; border-radius:10px; font-size:0.8rem;" onclick="openPay('${name}')">ყიდვა</button>
+                    </div>
+                `;
+            }
+        }
+
+        function openPay(name) {
+            selectedItem = name;
+            document.getElementById('item-name-display').innerText = name;
+            document.getElementById('modal-pay').style.display = 'flex';
+        }
+
+        function showConfirm(method) {
+            document.getElementById('modal-pay').style.display = 'none';
+            document.getElementById('modal-confirm').style.display = 'flex';
+            const text = document.getElementById('confirm-text');
+            
+            if(method === 'CASH') {
+                text.innerText = "ნაღდი ფული კურიერს გადაუხადეთ ნივთის ჩაბარებისას.";
+            } else {
+                text.innerText = "გსურთ ბარათით გადახდის დადასტურება?";
+            }
+
+            document.getElementById('final-send').onclick = function() {
+                const body = `მე ეს ნივთი გამოვიწერე: ${selectedItem} (${method})`;
+                window.location.href = `mailto:${emailAddr}?subject=China ამანათი&body=${encodeURIComponent(body)}`;
+            };
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+    </script>
+</body>
+</html>
