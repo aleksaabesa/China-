@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>China ამანათი</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="China ამანათი">
+    
+    <link rel="apple-touch-icon" href="IMG_4717.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="IMG_4717.png">
+
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        :root { --primary: #ff4757; --dark: #1e272e; --accent: #ffa502; }
+        body { font-family: sans-serif; background: var(--dark); color: white; margin: 0; text-align: center; }
+        #welcome-screen { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .hero-title { font-size: 3rem; font-weight: 900; color: var(--primary); margin: 0; }
+        .main-btn { width: 260px; padding: 18px; margin: 10px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; }
+        .shop-btn { background: var(--primary); color: white; }
+        .info-btn { background: rgba(255,255,255,0.1); color: white; }
+        #shop-section { display: none; padding: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: #2f3542; border-radius: 20px; padding: 10px; }
+        .card img { width: 100%; border-radius: 15px; height: 120px; object-fit: cover; }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen">
+        <h1 class="hero-title">CHINA<br>ამანათი</h1>
+        <button class="main-btn shop-btn" onclick="openShop()">შესვლა საშოპინგოდ</button>
+        <button class="main-btn info-btn" onclick="alert('iOS: Share -> Add to Home Screen\nAndroid: Settings -> Install App')">როგორ გადმოვწერო?</button>
+    </div>
+
+    <div id="shop-section">
+        <h2>კატალოგი</h2>
+        <div class="grid" id="container"></div>
+    </div>
+
+    <script>
+        function openShop() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('shop-section').style.display = 'block';
+            const container = document.getElementById('container');
+            for(let i=1; i<=80; i++) {
+                let name = "Item #" + i;
+                container.innerHTML += `
+                    <div class="card">
+                        <img src="https://picsum.photos/200/200?random=${i}">
+                        <p>${name}</p>
+                        <button class="shop-btn" style="width:100%; border-radius:10px;" onclick="buy('${name}')">ყიდვა</button>
+                    </div>
+                `;
+            }
+        }
+        function buy(name) {
+            window.location.href = "mailto:alexandreabesadze172@gmail.com?subject=China ამანათი&body=" + encodeURIComponent("მე ეს ნივთი გამოვიწერე: " + name);
+        }
+    </script>
+</body>
+</html>
