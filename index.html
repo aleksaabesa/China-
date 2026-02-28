@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>China ამანათი</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="IMG_4717.PNG">
+    <link rel="manifest" href="manifest.json">
+
+    <style>
+        :root { --primary: #ff4757; --dark: #1e272e; --light: #f1f2f6; --accent: #ffa502; --success: #2ed573; --bg: var(--dark); --text: white; --card: #2f3542; }
+        body.light-mode { --bg: var(--light); --text: #2f3542; --card: white; }
+        
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; transition: 0.3s; }
+        
+        /* Header & Controls */
+        .top-bar { display: flex; justify-content: space-between; padding: 15px; align-items: center; }
+        .theme-toggle { background: none; border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px; border-radius: 10px; cursor: pointer; }
+
+        #welcome-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px; }
+        .hero-title { font-size: 3rem; font-weight: 900; background: linear-gradient(45deg, #ff4757, #ffa502); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 10px 0; }
+        
+        /* Tracking Section */
+        .track-container { background: var(--card); padding: 15px; border-radius: 20px; width: 280px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .track-input { width: 80%; padding: 10px; border-radius: 10px; border: none; outline: none; margin-bottom: 10px; }
+        
+        .main-btn { width: 280px; padding: 15px; margin: 5px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .scan-btn { background: var(--success); color: white; }
+        .shop-btn { background: var(--primary); color: white; }
+
+        /* Shop Section */
+        #shop-section { display: none; padding: 20px; }
+        .filter-bar { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; width: 100%; }
+        .filter-btn { background: var(--card); color: var(--text); border: none; padding: 8px 15px; border-radius: 10px; white-space: nowrap; }
+        .filter-btn.active { background: var(--primary); color: white; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: var(--card); border-radius: 20px; padding: 10px; text-align: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .card img { width: 100%; border-radius: 15px; height: 120px; object-fit: cover; }
+        .wish-btn { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; color: white; width: 30px; height: 30px; cursor: pointer; }
+        .wish-btn.active { color: var(--primary); }
+
+        /* Live Chat */
+        .chat-float { position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-decoration: none; z-index: 1000; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
+        .modal { background: white; color: #333; padding: 25px; border-radius: 25px; width: 85%; max-width: 320px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <a href="https://wa.me/995555555555" class="chat-float">💬</a>
+
+    <div id="welcome-screen">
+        <div class="top-bar" style="width: 100%;">
+            <span>v1.5</span>
+            <button class="theme-toggle" onclick="toggleTheme()">🌓 Mode</button>
+        </div>
+        
+        <h1 class="hero-title">CHINA<br>ამანათი</h1>
+
+        <div class="track-container">
+            <p style="margin-top:0;">📦 თრექინგი</p>
+            <input type="text" id="track-id" class="track-input" placeholder="შეიყვანეთ კოდი...">
+            <button class="main-btn" style="width:100%; padding:10px; background:var(--accent); color:white;" onclick="checkTrack()">შემოწმება</button>
+        </div>
+
+        <button class="main-btn scan-btn" onclick="startScanner()">გაფორმება (Scan)</button>
+        <button class="main-btn shop-btn" onclick="openShop()">შესვლა საშოპინგოდ</button>
+        <button class="main-btn" style="background:none; border: 1px solid var(--text); color: var(--text);" onclick="showModal('instruction-modal')">ინსტრუქცია</button>
+    </div>
+
+    <div id="shop-section">
+        <h2 style="text-align:center;">კატალოგი</h2>
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterItems('all')">ყველა</button>
+            <button class="filter-btn" onclick="filterItems('tech')">ტექნიკა</button>
+            <button class="filter-btn" onclick="filterItems('acc')">აქსესუარები</button>
+            <button class="filter-btn" onclick="filterItems('home')">სახლი</button>
+        </div>
+        <div class="grid" id="container"></div>
+        <button class="main-btn" style="width:100%; margin-top:20px; background:var(--card); color:var(--text);" onclick="location.reload()">უკან</button>
+    </div>
+
+    <div id="instruction-modal" class="modal-overlay"><div class="modal"><h2>ინსტრუქცია</h2><p>Safari -> Share -> Add to Home Screen</p><button class="main-btn shop-btn" onclick="closeModal()">გავიგე</button></div></div>
+    
+    <div id="modal-pay" class="modal-overlay">
+        <div class="modal">
+            <h3 id="item-name-display">ნივთი</h3>
+            <p id="item-price-display" style="font-weight:bold; color:var(--primary);"></p>
+            <button class="main-btn" style="background:var(--dark); color:white; width:100%;" onclick="handleFinalOrder('CARD')">ბარათით გადახდა</button>
+            <button class="main-btn" style="background:var(--accent); color:white; width:100%;" onclick="handleFinalOrder('CASH')">ნაღდი ანგარიშსწორება</button>
+            <p onclick="closeModal()" style="color:red; cursor:pointer; margin-top:10px;">გაუქმება</p>
+        </div>
+    </div>
+
+    <script>
+        // 5. Theme Toggle
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+        }
+
+        // 1. Tracking Logic
+        function checkTrack() {
+            const id = document.getElementById('track-id').value;
+            if(!id) return alert("შეიყვანეთ კოდი!");
+            alert("ამანათი " + id + ": გზაშია საწყობისკენ 🚚");
+        }
+
+        // 3. Shop & 4. Wishlist
+        const items = [
+            { name: "iPhone 15 Pro", price: "3200 ₾", cat: "tech" },
+            { name: "AirPods Max", price: "1500 ₾", cat: "tech" },
+            { name: "Dyson V15", price: "1900 ₾", cat: "home" },
+            { name: "Apple Watch", price: "2200 ₾", cat: "acc" },
+            { name: "JBL Flip 6", price: "350 ₾", cat: "tech" },
+            { name: "Marshall Major", price: "400 ₾", cat: "acc" }
+        ];
+
+        function openShop() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('shop-section').style.display = 'block';
+            filterItems('all');
+        }
+
+        function filterItems(cat) {
+            const container = document.getElementById('container');
+            container.innerHTML = "";
+            const filtered = cat === 'all' ? items : items.filter(i => i.cat === cat);
+            
+            filtered.forEach((item, i) => {
+                container.innerHTML += `
+                    <div class="card">
+                        <button class="wish-btn" onclick="this.classList.toggle('active')">❤</button>
+                        <img src="https://picsum.photos/300/300?random=${i}">
+                        <p style="font-weight:bold; font-size:0.8rem; margin:5px 0;">${item.name}</p>
+                        <p style="color:var(--accent); font-weight:bold; font-size:0.9rem;">${item.price}</p>
+                        <button class="shop-btn" style="width:100%; padding:8px; border-radius:10px; font-size:0.7rem;" onclick="openPaymentModal('${item.name}', '${item.price}')">ყიდვა</button>
+                    </div>`;
+            });
+        }
+
+        // Rest of functions
+        let selectedItem = "", selectedPrice = "";
+        function openPaymentModal(n, p) { selectedItem = n; selectedPrice = p; document.getElementById('item-name-display').innerText = n; document.getElementById('item-price-display').innerText = p; showModal('modal-pay'); }
+        function handleFinalOrder(m) { window.location.href = `mailto:alexandreabesadze172@gmail.com?subject=შეკვეთა&body=${selectedItem} - ${selectedPrice} - ${m}`; }
+        function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+        async function startScanner() { alert("კამერა ირთვება..."); }
+    </script>
+</body>
+</html>
